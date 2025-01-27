@@ -43,6 +43,7 @@ class Ethernet:
         self._sock.bind((self._interface, 0))
         self._sock.send(self._packet)
 
+    #Capturing frames on a specific network interface.
     def startCapturing(self,interface,callback):
         sock=socket.socket(socket.AF_PACKET, socket.SOCK_RAW,socket.htons(0x0003))
         sock.bind(("wlp4s0",0))
