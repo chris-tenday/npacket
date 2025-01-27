@@ -76,7 +76,5 @@ class ARP:
         self.senderIP = getDeviceIP() if self.senderIP is None else self.senderIP
         self.senderMac = getInterfaceMac(self._interface) if self.senderMac is None else self.senderMac
 
-        packet = self._hardwareType + self._protocolType + self._hardwareSize + self._protocolSize + self.opCode
-        '''packet += (packMacAddress(self.senderMac) + packIP(self.senderIP) + packMacAddress(self.targetMac)
-                   + packIP(self.targetIP))'''
+        packet = self._hardwareType + self._protocolType + self._hardwareSize + self._protocolSize + self.opCode + packMacAddress(self.senderMac) + packIP(self.senderIP) + packMacAddress(self.targetMac) + self.targetIP
         return packet

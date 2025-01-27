@@ -8,6 +8,6 @@ arp.setOpCode(opCode=1)
 arp.setTargetIP(targetIp="10.42.0.215")
 
 ether=Ethernet()
-ether.setHeader(destMac="ff:ff:ff:ff:ff:ff",type=1,interface="wlp4s0")
+ether.setHeader(destMac="ff:ff:ff:ff:ff:ff",type=0x0806,interface="wlp4s0")
 ether.setPayload(payload=arp.build())
 ether.send()
