@@ -53,6 +53,14 @@ class ARP:
     def setOpCode(self, opCode):
         self.opCode = struct.pack("!H", opCode)
 
+    #Specify the ARP operation type (request, reply or reverse) by means of a string.
+    def setOperationType(self, type = "request"):
+        if type == "request":
+            self.opCode=1
+        elif type == "reply":
+            self.opCode=2
+        self.opCode = struct.pack("!H", self.opCode)
+
     #set the target IP.
     def setTargetIP(self, targetIp):
         self.targetIP = packIP(targetIp)
