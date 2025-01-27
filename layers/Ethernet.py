@@ -1,6 +1,7 @@
 import socket
 import struct
 from utilities import *
+from packets.EthernetFrame import  *
 
 class Ethernet:
     _sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
@@ -8,8 +9,11 @@ class Ethernet:
     _destMac = None
     _type = None
     _interface = None
-    _payload = None
+    _frame = None
     _packet = None
+
+    def __init__(self,interface):
+        self._interface=interface
 
     #Set the frame header.
     def setHeader(self, destMac, type, interface, sourceMac=None):
@@ -21,33 +25,36 @@ class Ethernet:
         else:
             self._sourceMac = sourceMac
 
-    #Set the frame payload
-    def setPayload(self, payload):
-        self._payload = payload
+    #Set the frame to send
+    def setFrame(self, frame):
+        if isinstance(frame, EthernetFrame):
+            self._frame = frame
+        else:
+            raise Exception("[x] Payload not supported.")
 
-    def _generate(self):
+    '''def _generate(self):
         headerPart = struct.pack(
             "!H",
             self._type
         )
 
         header = packMacAddress(self._destMac) + packMacAddress(self._sourceMac) + headerPart
-        self._packet = header + self._payload
+        self._packet = header + self._payload'''
 
     #Send the frame
     def send(self):
-        if self._payload is None:
+        if self._frame is None:
             print("[x] No payload set.")
             return
-        self._generate()
+
         self._sock.bind((self._interface, 0))
-        self._sock.send(self._packet)
+        self._sock.send(self._frame.build())
 
     #Capturing frames on a specific network interface.
     def startCapturing(self,interface,callback):
-        sock=socket.socket(socket.AF_PACKET, socket.SOCK_RAW,socket.htons(0x0003))
-        sock.bind(("wlp4s0",0))
+        sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,socket.htons(0x0003))
+        sock.bind((interface,0))
         while 1:
-            packet=sock.recv(65535)
+            packet = sock.recv(65535)
             #call the callback
             callback(packet)

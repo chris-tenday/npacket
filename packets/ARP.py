@@ -1,8 +1,9 @@
 import struct
 from utilities import *
+from packets.Packet import *
 
 
-class ARP:
+class ARP(Packet):
     _hardwareType = struct.pack("!H", 1)  #ethernet
     _protocolType = struct.pack("!H", 0x0800)  #ipv4
     _hardwareSize = struct.pack("!B", 6)  #size of the mac address in bytes.
@@ -17,37 +18,6 @@ class ARP:
 
     def __init__(self, interface):
         self._interface = interface
-        '''if targetMac is None:
-            self._targetMac = "00:00:00:00:00:00"
-        else:
-            self._targetMac = targetMac
-
-        if senderMac is None:
-            #get Interface Mac address
-            self._senderMac = getInterfaceMac(interface=interface)
-        else:
-            self._senderMac = senderMac
-        if senderIP is None:
-            self._senderIP = getDeviceIP()
-        else:
-            self._senderIP = senderIP'''
-
-    '''def generate(self):
-        headerPart = struct.pack(
-            "!HHBBH",
-            self._hardwareType,
-            self._protocolType,
-            self._hardwareSize,
-            self._protocolSize,
-            self._opCode
-        )
-
-        header = headerPart + packMacAddress(self._senderMac) + packIP(self._senderIP) + packMacAddress(
-            self._targetMac) + packIP(self._targetIP)
-        self._packet = header
-
-        return self._packet
-    '''
 
     #set operation code (ARP query or reply)
     def setOpCode(self, opCode):
@@ -81,8 +51,9 @@ class ARP:
 
     #Build the packet.
     def build(self):
-        self.senderIP = getDeviceIP() if self.senderIP is None else self.senderIP
-        self.senderMac = getInterfaceMac(self._interface) if self.senderMac is None else self.senderMac
+        self.senderIP = packIP(getDeviceIP()) if self.senderIP is None else self.senderIP
+        self.senderMac = packMacAddress(getInterfaceMac(self._interface)) if self.senderMac is None else self.senderMac
 
-        packet = self._hardwareType + self._protocolType + self._hardwareSize + self._protocolSize + self.opCode + packMacAddress(self.senderMac) + packIP(self.senderIP) + packMacAddress(self.targetMac) + self.targetIP
+        packet = (self._hardwareType + self._protocolType + self._hardwareSize + self._protocolSize + self.opCode
+                  + self.senderMac + self.senderIP + packMacAddress(self.targetMac) + self.targetIP)
         return packet
