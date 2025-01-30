@@ -1,21 +1,15 @@
 from layers.Ethernet import *
 from packets.EthernetFrame import *
+from IP import *
+from packets.ICMP import *
 
+icmp=ICMP()
+icmp.setPayload(payload="Chris Tenday")
 
-#eth.startCapturing("wlp4s0", lambda packet:  print(packet))
-
-#Build the ARP request packet.
-arp=ARP(interface="wlp4s0")
-arp.setOperationType(type="request")
-arp.setTargetIP(targetIp="10.42.0.215")
-
-ethernetFrame=EthernetFrame(interface="wlp4s0")
-ethernetFrame.setDestMac("ff:ff:ff:ff:ff:ff")
-ethernetFrame.setPayload(payload=arp)
-
-eth=Ethernet(interface="wlp4s0")
-eth.setFrame(frame=ethernetFrame)
-eth.send()
+ip=IP()
+ip.setHeader(destIp="10.42.0.215",protocol=1,sourceIp="10.42.0.1")
+ip.setPayload(payload=icmp.build())
+ip.send()
 
 
 
